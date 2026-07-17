@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="迴龍站周邊房屋監控 Dashboard" />
+  <title>迴龍房屋監控</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><span class="brand-mark">H</span><div><strong>迴龍房屋監控</strong><small>HUILONG PROPERTY WATCH</small></div></div>
+    <div id="updated" class="updated">載入資料中</div>
+  </header>
+  <main class="shell">
+    <section class="intro">
+      <div><p class="eyebrow">PUBLIC LISTING MONITOR</p><h1>把市場變成<br><em>可比較的清單。</em></h1><p class="lede">目前架上物件、價格變動與下架紀錄，集中在一個可快速瀏覽的畫面。</p></div>
+      <div class="scope"><span>監控範圍</span><strong>迴龍站周邊</strong><small>大樓・20–60 坪・900–2,900 萬</small></div>
+    </section>
+    <section id="metrics" class="metrics"></section>
+    <section class="toolbar">
+      <label class="search"><span>搜尋</span><input id="search" type="search" placeholder="社區、地址、標題…" /></label>
+      <label><span>來源</span><select id="source"><option value="all">全部來源</option><option value="信義房屋">信義房屋</option><option value="永慶房屋">永慶房屋</option></select></label>
+      <label><span>排序</span><select id="sort"><option value="price-asc">總價：低至高</option><option value="price-desc">總價：高至低</option><option value="updated">最近更新</option><option value="area-desc">建坪：大至小</option></select></label>
+      <button id="reset" class="reset" type="button">清除條件</button>
+    </section>
+    <section class="section-head"><div><p class="eyebrow">ACTIVE LISTINGS</p><h2>目前架上 <span id="result-count"></span></h2></div><div class="legend"><span class="dot new"></span>新上架／重新上架</div></section>
+    <section id="listings" class="listing-grid"></section>
+    <section class="section-head history-head"><div><p class="eyebrow">PRICE & STATUS LOG</p><h2>變動紀錄</h2></div></section>
+    <section id="history" class="history"></section>
+  </main>
+  <footer>資料由本機房屋監控流程匯出；網站僅呈現公開房源資訊。<span id="footer-date"></span></footer>
+  <script src="app.js"></script>
+</body>
+</html>
