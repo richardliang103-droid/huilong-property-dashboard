@@ -30,8 +30,24 @@ def main():
         'removed': read_sheet(workbook['已下架']),
         'price_changes': read_sheet(workbook['價格變動']),
     }
+    workbook.close()
+
+    # Avoid a daily Git commit and Vercel deployment when the workbook data is
+    # identical. Preserve the previous timestamp so the JSON remains unchanged.
+    if DEST.exists():
+        try:
+            previous = json.loads(DEST.read_text(encoding='utf-8'))
+            if all(previous.get(key) == payload.get(key) for key in ('source', 'active', 'removed', 'price_changes')):
+                payload['generated_at'] = previous.get('generated_at', payload['generated_at'])
+        except (json.JSONDecodeError, OSError):
+            pass
+
     DEST.parent.mkdir(parents=True, exist_ok=True)
-    DEST.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding='utf-8')
+    serialized = json.dumps(payload, ensure_ascii=False, indent=2) + '\n'
+    if DEST.exists() and DEST.read_text(encoding='utf-8') == serialized:
+        print('dashboard data unchanged')
+        return
+    DEST.write_text(serialized, encoding='utf-8')
     print(f"exported active={len(payload['active'])} removed={len(payload['removed'])} price_changes={len(payload['price_changes'])}")
 
 if __name__ == '__main__':

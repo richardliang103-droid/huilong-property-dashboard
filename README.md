@@ -6,11 +6,11 @@
 
 - 本機 Excel：`~/Library/CloudStorage/SynologyDrive-Hermes/Houses/迴龍物件追蹤.xlsx`
 - `data/properties.json` 只放前端展示所需欄位，不上傳 Excel 原檔。
-- 目前資料由房屋監控爬蟲匯出，包含信義房屋與永慶房屋。
+- 目前資料由房屋監控爬蟲匯出，包含信義房屋、永慶房屋與台灣房屋。
 
 ## 本機更新資料
 
-在房屋監控流程完成後重新匯出：
+在房屋監控流程完成後重新匯出。若 Excel 資料未變動，匯出器不會建立新的 Git 提交或觸發 Vercel 部署：
 
 ```bash
 source ~/.hermes/venvs/web-clipper/bin/activate
