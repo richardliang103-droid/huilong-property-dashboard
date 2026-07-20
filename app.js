@@ -81,11 +81,11 @@ function renderSourceHealth() {
   }
   const sources = Object.values(health.sources);
   section.hidden = false;
-  $('#source-health-note').textContent = health.removal_allowed ? '本次資料完整，已啟用下架判定' : '本次有來源不完整，已暫停下架判定';
+  $('#source-health-note').textContent = health.removal_allowed ? '已啟用下架判定' : '已暫停下架判定';
   $('#source-health').innerHTML = sources.map(source => {
     const stateText = source.complete ? '資料完整' : source.error ? '抓取失敗' : '資料不完整';
-    const error = source.error ? `<small>${text(source.error)}</small>` : '';
-    return `<article class="source-card ${source.complete ? 'is-healthy' : 'is-warning'}"><strong>${text(source.name)}</strong><span>${stateText}</span><b>${text(source.collected, 0)} 筆</b>${error}</article>`;
+    const error = source.error ? `：${text(source.error)}` : '';
+    return `<span class="source-pill ${source.complete ? 'is-healthy' : 'is-warning'}" title="${stateText}${error}">${text(source.name)} <b>${text(source.collected, 0)}</b></span>`;
   }).join('');
 }
 function renderHistory() {
