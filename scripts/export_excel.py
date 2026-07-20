@@ -5,6 +5,7 @@ from openpyxl import load_workbook
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = Path.home() / 'Library/CloudStorage/SynologyDrive-Hermes/Houses/迴龍物件追蹤.xlsx'
+STATUS_SOURCE = Path.home() / '.hermes/profiles/argus/data/huilong_watch_status.json'
 DEST = ROOT / 'data/properties.json'
 
 def clean(value):
@@ -19,6 +20,16 @@ def read_sheet(ws):
         rows.append({header: clean(values[i]) for i, header in enumerate(headers) if header})
     return rows
 
+
+def read_source_health():
+    try:
+        data = json.loads(STATUS_SOURCE.read_text(encoding='utf-8'))
+        if isinstance(data, dict) and isinstance(data.get('sources'), dict):
+            return data
+    except (json.JSONDecodeError, OSError):
+        pass
+    return None
+
 def main():
     if not SOURCE.exists():
         raise SystemExit(f'Excel not found: {SOURCE}')
@@ -29,6 +40,7 @@ def main():
         'active': read_sheet(workbook['架上']),
         'removed': read_sheet(workbook['已下架']),
         'price_changes': read_sheet(workbook['價格變動']),
+        'source_health': read_source_health(),
     }
     workbook.close()
 
@@ -37,7 +49,7 @@ def main():
     if DEST.exists():
         try:
             previous = json.loads(DEST.read_text(encoding='utf-8'))
-            if all(previous.get(key) == payload.get(key) for key in ('source', 'active', 'removed', 'price_changes')):
+            if all(previous.get(key) == payload.get(key) for key in ('source', 'active', 'removed', 'price_changes', 'source_health')):
                 payload['generated_at'] = previous.get('generated_at', payload['generated_at'])
         except (json.JSONDecodeError, OSError):
             pass

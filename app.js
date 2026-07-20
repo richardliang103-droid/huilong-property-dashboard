@@ -16,6 +16,7 @@ function safeUrl(value) {
 function today() { return state.data.generated_at.slice(0, 10); }
 function isNew(item) { return item['首次出現'] === today() && !item['重新上架日期']; }
 function isRelisted(item) { return item['重新上架日期'] === today(); }
+function isPendingRemoval(item) { return String(item['備註'] || '').includes('[待確認下架:'); }
 function sourceMatch(item) { return state.filters.source === 'all' || String(item['來源網站'] || '').includes(state.filters.source); }
 function searchMatch(item) {
   const query = state.filters.search.trim().toLowerCase();
@@ -34,8 +35,9 @@ function renderMetrics() {
   const data = state.data;
   const fresh = data.active.filter(isNew).length;
   const relisted = data.active.filter(isRelisted).length;
+  const pending = data.active.filter(isPendingRemoval).length;
   $('#hero-count').textContent = data.active.length;
-  $('#metrics').innerHTML = [['架上物件', data.active.length], ['新上架', fresh], ['重新上架', relisted], ['價格變動', data.price_changes.length]].map(metric => `<div class="metric"><span>${metric[0]}</span><strong>${metric[1]}</strong></div>`).join('');
+  $('#metrics').innerHTML = [['架上物件', data.active.length], ['新上架', fresh], ['重新上架', relisted], ['待確認下架', pending], ['價格變動', data.price_changes.length]].map(metric => `<div class="metric"><span>${metric[0]}</span><strong>${metric[1]}</strong></div>`).join('');
   const callout = $('#new-callout');
   if (!fresh) {
     callout.hidden = true;
@@ -60,10 +62,30 @@ function renderListings() {
   $('#listings').innerHTML = rows.map(item => {
     const fresh = isNew(item);
     const relisted = isRelisted(item);
-    const badge = fresh ? '<span class="badge badge-new">新上架</span>' : relisted ? '<span class="badge badge-relisted">重新上架</span>' : '';
+    const badges = [
+      fresh ? '<span class="badge badge-new">新上架</span>' : '',
+      relisted ? '<span class="badge badge-relisted">重新上架</span>' : '',
+      isPendingRemoval(item) ? '<span class="badge badge-pending">待確認下架</span>' : '',
+    ].filter(Boolean).join('');
     const title = text(item['標題'], item['社區名稱'] || item['地址'] || '—');
     const community = text(item['社區名稱'], item['地址'] || '—');
-    return `<article class="listing ${fresh ? 'is-new ' : ''}${relisted ? 'is-relisted' : ''}"><div class="listing-top"><div><div class="listing-title">${title}</div><div class="community">${community}・${text(item['行政區'])}</div></div>${badge}</div><div class="price">${money(item['總價(萬)'])} <small>總價</small></div><div class="facts"><div class="fact"><span>建坪</span><strong>${text(item['建坪'])} 坪</strong></div><div class="fact"><span>格局</span><strong>${text(item['格局'])}</strong></div><div class="fact"><span>樓層</span><strong>${text(item['樓層'])}</strong></div><div class="fact"><span>屋齡</span><strong>${text(item['屋齡(年)'])} 年</strong></div><div class="fact"><span>車位</span><strong>${text(item['車位型'])}</strong></div><div class="fact"><span>更新</span><strong>${dateText(item['最後更新'])}</strong></div></div><div class="listing-bottom"><span class="listing-source">來源：${text(item['來源網站'])}</span><a href="${safeUrl(item['來源連結'])}" target="_blank" rel="noopener noreferrer">查看房源 →</a><a href="${safeUrl(item['地圖連結'])}" target="_blank" rel="noopener noreferrer">地圖 →</a></div></article>`;
+    return `<article class="listing ${fresh ? 'is-new ' : ''}${relisted ? 'is-relisted' : ''}"><div class="listing-top"><div><div class="listing-title">${title}</div><div class="community">${community}・${text(item['行政區'])}</div></div><div class="badges">${badges}</div></div><div class="price">${money(item['總價(萬)'])} <small>總價</small></div><div class="facts"><div class="fact"><span>建坪</span><strong>${text(item['建坪'])} 坪</strong></div><div class="fact"><span>格局</span><strong>${text(item['格局'])}</strong></div><div class="fact"><span>樓層</span><strong>${text(item['樓層'])}</strong></div><div class="fact"><span>屋齡</span><strong>${text(item['屋齡(年)'])} 年</strong></div><div class="fact"><span>車位</span><strong>${text(item['車位型'])}</strong></div><div class="fact"><span>更新</span><strong>${dateText(item['最後更新'])}</strong></div></div><div class="listing-bottom"><span class="listing-source">來源：${text(item['來源網站'])}</span><a href="${safeUrl(item['來源連結'])}" target="_blank" rel="noopener noreferrer">查看房源 →</a><a href="${safeUrl(item['地圖連結'])}" target="_blank" rel="noopener noreferrer">地圖 →</a></div></article>`;
+  }).join('');
+}
+function renderSourceHealth() {
+  const health = state.data.source_health;
+  const section = $('#source-health-section');
+  if (!health || !health.sources) {
+    section.hidden = true;
+    return;
+  }
+  const sources = Object.values(health.sources);
+  section.hidden = false;
+  $('#source-health-note').textContent = health.removal_allowed ? '本次資料完整，已啟用下架判定' : '本次有來源不完整，已暫停下架判定';
+  $('#source-health').innerHTML = sources.map(source => {
+    const stateText = source.complete ? '資料完整' : source.error ? '抓取失敗' : '資料不完整';
+    const error = source.error ? `<small>${text(source.error)}</small>` : '';
+    return `<article class="source-card ${source.complete ? 'is-healthy' : 'is-warning'}"><strong>${text(source.name)}</strong><span>${stateText}</span><b>${text(source.collected, 0)} 筆</b>${error}</article>`;
   }).join('');
 }
 function renderHistory() {
@@ -75,6 +97,7 @@ function renderHistory() {
 }
 function render() {
   renderMetrics();
+  renderSourceHealth();
   renderListings();
   renderHistory();
   $('#updated').textContent = `資料更新 ${dateText(state.data.generated_at)}`;

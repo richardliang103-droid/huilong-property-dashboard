@@ -20,6 +20,10 @@
       <div class="intro-copy"><p class="eyebrow">PUBLIC LISTING MONITOR</p><h1>目前架上物件 <em id="hero-count">—</em> 筆</h1><div class="scope"><span>監控範圍</span><strong>迴龍站周邊</strong><small>新北市新莊區、桃園市龜山區・住宅大樓・建坪 20–60 坪・總價 900–2,900 萬</small></div></div>
     </section>
     <section id="metrics" class="metrics"></section>
+    <section id="source-health-section" class="source-health-section" hidden>
+      <div class="section-head source-health-head"><div><p class="eyebrow">SOURCE HEALTH</p><h2>來源狀態</h2></div><span id="source-health-note" class="source-health-note"></span></div>
+      <section id="source-health" class="source-health"></section>
+    </section>
     <section id="new-callout" class="new-callout" hidden></section>
     <section class="toolbar">
       <label class="search"><span>搜尋</span><input id="search" type="search" placeholder="社區、地址、標題…" /></label>
@@ -27,7 +31,7 @@
       <label><span>排序</span><select id="sort"><option value="price-asc">總價：低至高</option><option value="price-desc">總價：高至低</option><option value="updated">最近更新</option><option value="area-desc">建坪：大至小</option></select></label>
       <button id="reset" class="reset" type="button">清除條件</button>
     </section>
-    <section class="section-head"><div><p class="eyebrow">ACTIVE LISTINGS</p><h2>目前架上 <span id="result-count"></span></h2></div><div class="legend"><span class="dot new"></span>新上架／重新上架</div></section>
+    <section class="section-head"><div><p class="eyebrow">ACTIVE LISTINGS</p><h2>目前架上 <span id="result-count"></span></h2></div><div class="legend"><span class="dot new"></span>新上架／重新上架／待確認下架</div></section>
     <section id="listings" class="listing-grid"></section>
     <section class="section-head history-head"><div><p class="eyebrow">PRICE & STATUS LOG</p><h2>變動紀錄</h2></div></section>
     <section id="history" class="history"></section>
