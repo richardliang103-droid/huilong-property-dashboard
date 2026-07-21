@@ -24,6 +24,28 @@ def read_sheet(ws):
     return rows
 
 
+def attach_source_details(rows, source_rows):
+    """Attach one-to-many Excel source rows before dashboard deduplication."""
+    by_fingerprint = {}
+    for source in source_rows:
+        fingerprint = str(source.get('物件指紋') or '')
+        if not fingerprint:
+            continue
+        by_fingerprint.setdefault(fingerprint, []).append({
+            '網站': source.get('來源網站') or '未知來源',
+            '物件編號': source.get('來源物件編號') or '',
+            '連結': source.get('來源連結') or None,
+            '首次確認': source.get('首次確認') or None,
+            '最後確認': source.get('最後確認') or None,
+            '狀態': source.get('狀態') or None,
+        })
+    for row in rows:
+        sources = by_fingerprint.get(str(row.get('指紋') or ''))
+        if sources:
+            row['來源物件'] = sources
+    return rows
+
+
 def read_source_health():
     try:
         data = json.loads(STATUS_SOURCE.read_text(encoding='utf-8'))
@@ -244,12 +266,15 @@ def main():
     if not SOURCE.exists():
         raise SystemExit(f'Excel not found: {SOURCE}')
     workbook = load_workbook(SOURCE, data_only=True)
-    active, deduplication = deduplicate_active(read_sheet(workbook['架上']))
+    source_rows = read_sheet(workbook['來源明細']) if '來源明細' in workbook.sheetnames else []
+    active_rows = attach_source_details(read_sheet(workbook['架上']), source_rows)
+    removed_rows = attach_source_details(read_sheet(workbook['已下架']), source_rows)
+    active, deduplication = deduplicate_active(active_rows)
     payload = {
         'generated_at': datetime.now().isoformat(),
         'source': '本機迴龍物件追蹤.xlsx',
         'active': active,
-        'removed': read_sheet(workbook['已下架']),
+        'removed': removed_rows,
         'price_changes': read_sheet(workbook['價格變動']),
         'source_health': read_source_health(),
         'deduplication': deduplication,

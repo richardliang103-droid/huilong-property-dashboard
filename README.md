@@ -31,3 +31,16 @@ python3 -m http.server 4173
 ## 部署
 
 這是純靜態網站，可直接連接 GitHub 後由 Vercel 自動部署。
+## 資料與部署位置
+
+正式排程與 Dashboard checkout 都在 `~/.hermes`：
+
+- 監控程式：`~/.hermes/profiles/argus/scripts/huilong_watch.py`
+- 排程入口：`~/.hermes/scripts/huilong_watch.sh`
+- Dashboard：`~/.hermes/huilong-property-watch`
+
+請勿再以 `~/huilong-property-dashboard` 作為排程發布來源；該舊 clone 可暫留作備份，但不應執行同步腳本。
+
+## 多來源資料
+
+Excel 的 `架上` 工作表是一戶一列，方便人工檢視；`來源明細` 則是一個網站刊登一列，保存物件指紋、網站、來源物件編號、網址與最後確認時間。Dashboard 以 `來源明細` 為準呈現多個連結，舊版 Excel 若只有來源名稱但未保存網址，會明確標記而不猜測網址。
