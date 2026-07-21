@@ -1,6 +1,6 @@
 import unittest
 
-from export_excel import deduplicate_active
+from export_excel import deduplicate_active, listing_sources
 
 
 def listing(listing_id, **overrides):
@@ -54,6 +54,16 @@ class DeduplicateActiveTests(unittest.TestCase):
         rows, _ = deduplicate_active([rich, sparse])
 
         self.assertEqual(len(rows), 2)
+
+    def test_multiple_source_names_do_not_reuse_one_brokers_url(self):
+        item = listing('combined', 來源網站='信義房屋/永慶房屋', 來源連結='https://www.sinyi.com.tw/buy/house/3992KB')
+
+        sources = listing_sources(item)
+
+        self.assertEqual(sources[0]['網站'], '信義房屋')
+        self.assertEqual(sources[0]['連結'], 'https://www.sinyi.com.tw/buy/house/3992KB')
+        self.assertEqual(sources[1]['網站'], '永慶房屋')
+        self.assertIsNone(sources[1]['連結'])
 
 
 if __name__ == '__main__':

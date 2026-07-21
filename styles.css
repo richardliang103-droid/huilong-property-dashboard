@@ -8,6 +8,7 @@
 /* Compact source status and pending-removal state */
 .metrics{grid-template-columns:repeat(7,1fr)}
 .badge-duplicate{background:#e3edf8;color:#2e5f8d}.duplicate-evidence{display:block;margin-top:4px;color:#52718f;font-size:10px}
+.source-unavailable{font-size:11px;color:var(--muted)}
 .metrics{grid-template-columns:repeat(7,1fr)}
 .source-status-section{display:flex;flex-wrap:wrap;align-items:center;gap:7px 9px;margin:-10px 0 30px;color:var(--muted);font-size:11px}.source-status-label{color:var(--ink);font-weight:600}.source-status{display:flex;flex-wrap:wrap;gap:6px}.source-pill{display:inline-flex;gap:4px;align-items:center;padding:3px 7px;border-radius:999px;background:var(--paper);border:1px solid var(--line);white-space:nowrap}.source-pill b{font-size:10px;font-weight:600}.source-pill.is-healthy::before,.source-pill.is-warning::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--accent)}.source-pill.is-warning::before{background:#c48b3e}.source-health-note{font-size:10px;color:var(--muted)}.badges{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:5px}.badge-pending{background:#fff1d9;color:#8a5a16}
 @media(max-width:900px){.metrics{grid-template-columns:repeat(3,1fr)}}

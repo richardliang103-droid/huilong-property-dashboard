@@ -3,6 +3,7 @@ import re
 from datetime import datetime
 from itertools import combinations
 from pathlib import Path
+from urllib.parse import urlparse
 from openpyxl import load_workbook
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -65,6 +66,21 @@ def source_names(item):
     return [name.strip() for name in str(item.get('來源網站') or '').split('/') if name.strip()]
 
 
+def source_name_from_url(url):
+    host = urlparse(str(url or '')).netloc.lower()
+    if 'sinyi.com.tw' in host:
+        return '信義房屋'
+    if 'yungching.com.tw' in host:
+        return '永慶房屋'
+    if 'hbhousing.com.tw' in host:
+        return '住商不動產'
+    if 'twhg.com.tw' in host:
+        return '台灣房屋'
+    if 'u-trust.com.tw' in host:
+        return '有巢氏房屋'
+    return None
+
+
 def listing_sources(item):
     """Preserve every original source URL when a card represents multiple ads."""
     sources = item.get('來源物件')
@@ -72,10 +88,18 @@ def listing_sources(item):
         return sources
     names = source_names(item)
     # Older Excel rows sometimes state that an ad was seen on several sites
-    # but retain only one URL. Keep that provenance as one source record
-    # instead of incorrectly assigning that URL to every named website.
+    # but retain only one URL. Preserve the source without a URL as an explicit
+    # non-clickable record; never assign one broker's URL to another broker.
     if len(names) > 1:
-        names = ['/'.join(names)]
+        url = item.get('來源連結')
+        known_source = source_name_from_url(url)
+        records = []
+        if known_source and known_source in names:
+            records.append({'網站': known_source, '連結': url, '標題': item.get('標題')})
+        for source in names:
+            if source != known_source:
+                records.append({'網站': source, '連結': None, '標題': item.get('標題'), '狀態': '網址未保存'})
+        return records or [{'網站': '/'.join(names), '連結': url, '標題': item.get('標題')}]
     return [{
         '網站': source,
         '連結': item.get('來源連結'),
