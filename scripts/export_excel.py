@@ -3,6 +3,7 @@ import re
 from datetime import datetime
 from itertools import combinations
 from pathlib import Path
+from urllib.parse import urlparse
 from openpyxl import load_workbook
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -20,6 +21,28 @@ def read_sheet(ws):
         if not any(value is not None for value in values):
             continue
         rows.append({header: clean(values[i]) for i, header in enumerate(headers) if header})
+    return rows
+
+
+def attach_source_details(rows, source_rows):
+    """Attach one-to-many Excel source rows before dashboard deduplication."""
+    by_fingerprint = {}
+    for source in source_rows:
+        fingerprint = str(source.get('物件指紋') or '')
+        if not fingerprint:
+            continue
+        by_fingerprint.setdefault(fingerprint, []).append({
+            '網站': source.get('來源網站') or '未知來源',
+            '物件編號': source.get('來源物件編號') or '',
+            '連結': source.get('來源連結') or None,
+            '首次確認': source.get('首次確認') or None,
+            '最後確認': source.get('最後確認') or None,
+            '狀態': source.get('狀態') or None,
+        })
+    for row in rows:
+        sources = by_fingerprint.get(str(row.get('指紋') or ''))
+        if sources:
+            row['來源物件'] = sources
     return rows
 
 
@@ -65,6 +88,21 @@ def source_names(item):
     return [name.strip() for name in str(item.get('來源網站') or '').split('/') if name.strip()]
 
 
+def source_name_from_url(url):
+    host = urlparse(str(url or '')).netloc.lower()
+    if 'sinyi.com.tw' in host:
+        return '信義房屋'
+    if 'yungching.com.tw' in host:
+        return '永慶房屋'
+    if 'hbhousing.com.tw' in host:
+        return '住商不動產'
+    if 'twhg.com.tw' in host:
+        return '台灣房屋'
+    if 'u-trust.com.tw' in host:
+        return '有巢氏房屋'
+    return None
+
+
 def listing_sources(item):
     """Preserve every original source URL when a card represents multiple ads."""
     sources = item.get('來源物件')
@@ -72,10 +110,18 @@ def listing_sources(item):
         return sources
     names = source_names(item)
     # Older Excel rows sometimes state that an ad was seen on several sites
-    # but retain only one URL. Keep that provenance as one source record
-    # instead of incorrectly assigning that URL to every named website.
+    # but retain only one URL. Preserve the source without a URL as an explicit
+    # non-clickable record; never assign one broker's URL to another broker.
     if len(names) > 1:
-        names = ['/'.join(names)]
+        url = item.get('來源連結')
+        known_source = source_name_from_url(url)
+        records = []
+        if known_source and known_source in names:
+            records.append({'網站': known_source, '連結': url, '標題': item.get('標題')})
+        for source in names:
+            if source != known_source:
+                records.append({'網站': source, '連結': None, '標題': item.get('標題'), '狀態': '網址未保存'})
+        return records or [{'網站': '/'.join(names), '連結': url, '標題': item.get('標題')}]
     return [{
         '網站': source,
         '連結': item.get('來源連結'),
@@ -220,12 +266,15 @@ def main():
     if not SOURCE.exists():
         raise SystemExit(f'Excel not found: {SOURCE}')
     workbook = load_workbook(SOURCE, data_only=True)
-    active, deduplication = deduplicate_active(read_sheet(workbook['架上']))
+    source_rows = read_sheet(workbook['來源明細']) if '來源明細' in workbook.sheetnames else []
+    active_rows = attach_source_details(read_sheet(workbook['架上']), source_rows)
+    removed_rows = attach_source_details(read_sheet(workbook['已下架']), source_rows)
+    active, deduplication = deduplicate_active(active_rows)
     payload = {
         'generated_at': datetime.now().isoformat(),
         'source': '本機迴龍物件追蹤.xlsx',
         'active': active,
-        'removed': read_sheet(workbook['已下架']),
+        'removed': removed_rows,
         'price_changes': read_sheet(workbook['價格變動']),
         'source_health': read_source_health(),
         'deduplication': deduplication,
