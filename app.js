@@ -16,6 +16,7 @@ function safeUrl(value) {
 function today() { return state.data.generated_at.slice(0, 10); }
 function isNew(item) { return item['首次出現'] === today() && !item['重新上架日期']; }
 function isRelisted(item) { return item['重新上架日期'] === today(); }
+function listingDate(item) { return item['重新上架日期'] || item['首次出現'] || ''; }
 function isPendingRemoval(item) { return String(item['備註'] || '').includes('[待確認下架:'); }
 function sourceMatch(item) { return state.filters.source === 'all' || String(item['來源網站'] || '').includes(state.filters.source); }
 function searchMatch(item) {
@@ -28,6 +29,7 @@ function filtered() {
     if (state.filters.sort === 'price-desc') return (b['總價(萬)'] || 0) - (a['總價(萬)'] || 0);
     if (state.filters.sort === 'area-desc') return (b['建坪'] || 0) - (a['建坪'] || 0);
     if (state.filters.sort === 'updated') return String(b['最後更新'] || '').localeCompare(String(a['最後更新'] || ''));
+    if (state.filters.sort === 'listing-date-desc') return listingDate(b).localeCompare(listingDate(a));
     return (a['總價(萬)'] || 0) - (b['總價(萬)'] || 0);
   });
 }
@@ -77,7 +79,7 @@ function renderListings() {
       : `<span class="source-unavailable">${text(source['網站'])}（網址未保存）</span>`
     ).join('');
     const evidence = Array.isArray(item['同戶比對理由']) && item['同戶比對理由'].length ? `<span class="duplicate-evidence" title="${text(item['同戶比對理由'].join('、'))}">${item['重複刊登數']} 個刊登已群組</span>` : '';
-    return `<article class="listing ${fresh ? 'is-new ' : ''}${relisted ? 'is-relisted' : ''}"><div class="listing-top"><div><div class="listing-title">${title}</div><div class="community">${community}・${text(item['行政區'])}</div></div><div class="badges">${badges}</div></div><div class="price">${money(item['總價(萬)'])} <small>總價</small></div><div class="facts"><div class="fact"><span>建坪</span><strong>${text(item['建坪'])} 坪</strong></div><div class="fact"><span>格局</span><strong>${text(item['格局'])}</strong></div><div class="fact"><span>樓層</span><strong>${text(item['樓層'])}</strong></div><div class="fact"><span>屋齡</span><strong>${text(item['屋齡(年)'])} 年</strong></div><div class="fact"><span>車位</span><strong>${text(item['車位型'])}</strong></div><div class="fact"><span>更新</span><strong>${dateText(item['最後更新'])}</strong></div></div><div class="listing-bottom"><span class="listing-source">來源：${text(item['來源網站'])}${evidence}</span>${sourceLinks}<a href="${safeUrl(item['地圖連結'])}" target="_blank" rel="noopener noreferrer">地圖 →</a></div></article>`;
+    return `<article class="listing ${fresh ? 'is-new ' : ''}${relisted ? 'is-relisted' : ''}"><div class="listing-top"><div><div class="listing-title">${title}</div><div class="community">${community}・${text(item['行政區'])}</div></div><div class="badges">${badges}</div></div><div class="price">${money(item['總價(萬)'])} <small>總價</small></div><div class="facts"><div class="fact"><span>建坪</span><strong>${text(item['建坪'])} 坪</strong></div><div class="fact"><span>格局</span><strong>${text(item['格局'])}</strong></div><div class="fact"><span>樓層</span><strong>${text(item['樓層'])}</strong></div><div class="fact"><span>屋齡</span><strong>${text(item['屋齡(年)'])} 年</strong></div><div class="fact"><span>車位</span><strong>${text(item['車位型'])}</strong></div><div class="fact"><span>上架</span><strong>${dateText(listingDate(item))}</strong></div></div><div class="listing-bottom"><span class="listing-source">來源：${text(item['來源網站'])}${evidence}</span>${sourceLinks}<a href="${safeUrl(item['地圖連結'])}" target="_blank" rel="noopener noreferrer">地圖 →</a></div></article>`;
   }).join('');
 }
 function renderSourceHealth() {

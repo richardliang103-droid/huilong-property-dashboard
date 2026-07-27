@@ -16,3 +16,6 @@
 @media(max-width:1050px){.metrics{grid-template-columns:repeat(4,1fr)}}
 @media(max-width:900px){.metrics{grid-template-columns:repeat(3,1fr)}}
 @media(max-width:600px){.metrics{grid-template-columns:repeat(2,1fr)}}
+
+/* Keep the full data timestamp visible in the narrow sticky header. */
+@media(max-width:600px){.topbar{height:auto;min-height:72px;align-items:flex-start;padding-top:14px;padding-bottom:14px}.updated{max-width:none;white-space:normal;overflow:visible;text-overflow:clip;line-height:1.35;flex:0 0 auto}}
