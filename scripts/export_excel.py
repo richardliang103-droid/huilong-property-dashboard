@@ -4,7 +4,6 @@ from datetime import datetime
 from itertools import combinations
 from pathlib import Path
 from urllib.parse import urlparse
-from openpyxl import load_workbook
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = Path.home() / 'Library/CloudStorage/SynologyDrive-Hermes/Houses/迴龍物件追蹤.xlsx'
@@ -262,7 +261,39 @@ def deduplicate_active(rows):
         'merged_group_count': sum(len(group) > 1 for group in groups),
     }
 
+def _volatility_stripped(payload):
+    """Deep copy of payload with fields that legitimately change on every run
+    removed, so day-to-day scrape noise (re-confirmation timestamps, raw
+    collected counts) doesn't look like a real listing change."""
+    clone = json.loads(json.dumps(payload))
+    for section in ('active', 'removed'):
+        for row in clone.get(section) or []:
+            row.pop('最後更新', None)
+            for source in row.get('來源物件') or []:
+                if isinstance(source, dict):
+                    source.pop('最後確認', None)
+    health = clone.get('source_health')
+    if isinstance(health, dict):
+        health.pop('checked_at', None)
+        for source in (health.get('sources') or {}).values():
+            if isinstance(source, dict):
+                source.pop('collected', None)
+    return clone
+
+
+PENDING_REMOVAL_MARKER = '[待確認下架:'
+
+
+def mark_pending_removal(rows):
+    """Derive an explicit boolean so the frontend doesn't parse 備註 text."""
+    for row in rows:
+        row['待確認下架'] = PENDING_REMOVAL_MARKER in str(row.get('備註') or '')
+    return rows
+
+
 def main():
+    from openpyxl import load_workbook
+
     if not SOURCE.exists():
         raise SystemExit(f'Excel not found: {SOURCE}')
     workbook = load_workbook(SOURCE, data_only=True)
@@ -270,6 +301,7 @@ def main():
     active_rows = attach_source_details(read_sheet(workbook['架上']), source_rows)
     removed_rows = attach_source_details(read_sheet(workbook['已下架']), source_rows)
     active, deduplication = deduplicate_active(active_rows)
+    active = mark_pending_removal(active)
     payload = {
         'generated_at': datetime.now().isoformat(),
         'source': '本機迴龍物件追蹤.xlsx',
@@ -281,13 +313,19 @@ def main():
     }
     workbook.close()
 
-    # Avoid a daily Git commit and Vercel deployment when the workbook data is
-    # identical. Preserve the previous timestamp so the JSON remains unchanged.
+    # Avoid a daily Git commit and Vercel deployment when nothing a visitor
+    # would see actually changed. Re-confirmation timestamps and raw collected
+    # counts move every run regardless, so they're excluded from the compare;
+    # reusing the whole previous payload (not just generated_at) keeps the
+    # serialized bytes identical so the unchanged-check below actually fires.
     if DEST.exists():
         try:
             previous = json.loads(DEST.read_text(encoding='utf-8'))
-            if all(previous.get(key) == payload.get(key) for key in ('source', 'active', 'removed', 'price_changes', 'source_health', 'deduplication')):
-                payload['generated_at'] = previous.get('generated_at', payload['generated_at'])
+            compare_keys = ('source', 'active', 'removed', 'price_changes', 'source_health', 'deduplication')
+            previous_stripped = _volatility_stripped({key: previous.get(key) for key in compare_keys})
+            payload_stripped = _volatility_stripped({key: payload.get(key) for key in compare_keys})
+            if previous_stripped == payload_stripped:
+                payload = previous
         except (json.JSONDecodeError, OSError):
             pass
 

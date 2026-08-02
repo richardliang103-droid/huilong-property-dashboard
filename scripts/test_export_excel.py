@@ -1,6 +1,12 @@
 import unittest
 
-from export_excel import attach_source_details, deduplicate_active, listing_sources
+from export_excel import (
+    _volatility_stripped,
+    attach_source_details,
+    deduplicate_active,
+    listing_sources,
+    mark_pending_removal,
+)
 
 
 def listing(listing_id, **overrides):
@@ -76,6 +82,40 @@ class DeduplicateActiveTests(unittest.TestCase):
             'https://www.sinyi.com.tw/buy/house/4959MV',
             'https://buy.yungching.com.tw/house/7240646',
         ])
+
+
+class MarkPendingRemovalTests(unittest.TestCase):
+    def test_flag_is_derived_from_remark_text(self):
+        pending = listing('pending', 備註='[待確認下架:2026-07-19]')
+        clear = listing('clear', 備註=None)
+
+        rows = mark_pending_removal([pending, clear])
+
+        self.assertTrue(rows[0]['待確認下架'])
+        self.assertFalse(rows[1]['待確認下架'])
+
+
+class VolatilityStrippedTests(unittest.TestCase):
+    def test_ignores_daily_reconfirmation_noise(self):
+        def payload(day):
+            return {
+                'active': [{
+                    '最後更新': f'2026-08-0{day}',
+                    '來源物件': [{'網站': '信義房屋', '最後確認': f'2026-08-0{day}'}],
+                }],
+                'source_health': {
+                    'checked_at': f'2026-08-0{day}T00:00:00',
+                    'sources': {'sinyi': {'collected': 160 + day, 'complete': True}},
+                },
+            }
+
+        self.assertEqual(_volatility_stripped(payload(1)), _volatility_stripped(payload(2)))
+
+    def test_still_detects_a_real_listing_change(self):
+        base = {'active': [{'總價(萬)': 1000, '最後更新': '2026-08-01'}], 'source_health': None}
+        changed = {'active': [{'總價(萬)': 1100, '最後更新': '2026-08-02'}], 'source_health': None}
+
+        self.assertNotEqual(_volatility_stripped(base), _volatility_stripped(changed))
 
 
 if __name__ == '__main__':
