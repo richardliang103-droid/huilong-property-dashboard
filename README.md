@@ -5,7 +5,7 @@
 ## 資料來源
 
 - 本機 Excel：`~/Library/CloudStorage/SynologyDrive-Hermes/Houses/迴龍物件追蹤.xlsx`
-- `data/properties.json` 只放前端展示所需欄位，不上傳 Excel 原檔。
+- `data/properties.json` 是 Excel 各工作表的匯出結果（不含 Excel 原檔本身），供前端讀取；欄位不做白名單篩選，因此也包含指紋、座向等前端目前未顯示的欄位。
 - 目前資料由房屋監控爬蟲匯出，包含信義房屋、永慶房屋與台灣房屋。
 - 匯出時會保守群組跨仲介的同戶刊登；原始 Excel 不會被改寫。只有同社區訊號、同樓層、同建坪，且權狀拆分或地址／開價／屋齡交叉吻合的刊登才會合併為「高度可能同戶」。
 
