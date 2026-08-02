@@ -17,7 +17,7 @@ function today() { return state.data.generated_at.slice(0, 10); }
 function isNew(item) { return item['首次出現'] === today() && !item['重新上架日期']; }
 function isRelisted(item) { return item['重新上架日期'] === today(); }
 function listingDate(item) { return item['重新上架日期'] || item['首次出現'] || ''; }
-function isPendingRemoval(item) { return String(item['備註'] || '').includes('[待確認下架:'); }
+function isPendingRemoval(item) { return item['待確認下架'] === true || String(item['備註'] || '').includes('[待確認下架:'); }
 function sourceMatch(item) { return state.filters.source === 'all' || String(item['來源網站'] || '').includes(state.filters.source); }
 function searchMatch(item) {
   const query = state.filters.search.trim().toLowerCase();
@@ -32,6 +32,20 @@ function filtered() {
     if (state.filters.sort === 'listing-date-desc') return listingDate(b).localeCompare(listingDate(a));
     return (a['總價(萬)'] || 0) - (b['總價(萬)'] || 0);
   });
+}
+function renderSourceOptions() {
+  const select = $('#source');
+  const names = new Set();
+  state.data.active.forEach(item => {
+    (Array.isArray(item['來源物件']) ? item['來源物件'] : []).forEach(source => {
+      if (source && source['網站']) names.add(source['網站']);
+    });
+    String(item['來源網站'] || '').split('/').forEach(name => { if (name.trim()) names.add(name.trim()); });
+  });
+  const sorted = [...names].sort((a, b) => a.localeCompare(b, 'zh-Hant'));
+  const current = select.value || 'all';
+  select.innerHTML = ['<option value="all">全部來源</option>', ...sorted.map(name => `<option value="${text(name)}">${text(name)}</option>`)].join('');
+  select.value = current !== 'all' && sorted.includes(current) ? current : 'all';
 }
 function renderMetrics() {
   const data = state.data;
@@ -79,7 +93,7 @@ function renderListings() {
       : `<span class="source-unavailable">${text(source['網站'])}（網址未保存）</span>`
     ).join('');
     const evidence = Array.isArray(item['同戶比對理由']) && item['同戶比對理由'].length ? `<span class="duplicate-evidence" title="${text(item['同戶比對理由'].join('、'))}">${item['重複刊登數']} 個刊登已群組</span>` : '';
-    return `<article class="listing ${fresh ? 'is-new ' : ''}${relisted ? 'is-relisted' : ''}"><div class="listing-top"><div><div class="listing-title">${title}</div><div class="community">${community}・${text(item['行政區'])}</div></div><div class="badges">${badges}</div></div><div class="price">${money(item['總價(萬)'])} <small>總價</small></div><div class="facts"><div class="fact"><span>建坪</span><strong>${text(item['建坪'])} 坪</strong></div><div class="fact"><span>格局</span><strong>${text(item['格局'])}</strong></div><div class="fact"><span>樓層</span><strong>${text(item['樓層'])}</strong></div><div class="fact"><span>屋齡</span><strong>${text(item['屋齡(年)'])} 年</strong></div><div class="fact"><span>車位</span><strong>${text(item['車位型'])}</strong></div><div class="fact"><span>上架</span><strong>${dateText(listingDate(item))}</strong></div></div><div class="listing-bottom"><span class="listing-source">來源：${text(item['來源網站'])}${evidence}</span>${sourceLinks}<a href="${safeUrl(item['地圖連結'])}" target="_blank" rel="noopener noreferrer">地圖 →</a></div></article>`;
+    return `<article class="listing ${fresh ? 'is-new ' : ''}${relisted ? 'is-relisted' : ''}"><div class="listing-top"><div><div class="listing-title">${title}</div><div class="community">${community}・${text(item['行政區'])}</div></div><div class="badges">${badges}</div></div><div class="price">${money(item['總價(萬)'])} <small>總價</small></div><div class="facts"><div class="fact"><span>建坪</span><strong>${text(item['建坪'])} 坪</strong></div><div class="fact"><span>單價</span><strong>${text(item['單價(萬/坪)'])} 萬/坪</strong></div><div class="fact"><span>格局</span><strong>${text(item['格局'])}</strong></div><div class="fact"><span>樓層</span><strong>${text(item['樓層'])}</strong></div><div class="fact"><span>屋齡</span><strong>${text(item['屋齡(年)'])} 年</strong></div><div class="fact"><span>車位</span><strong>${text(item['車位型'])}</strong></div><div class="fact"><span>上架</span><strong>${dateText(listingDate(item))}</strong></div></div><div class="listing-bottom"><span class="listing-source">來源：${text(item['來源網站'])}${evidence}</span>${sourceLinks}<a href="${safeUrl(item['地圖連結'])}" target="_blank" rel="noopener noreferrer">地圖 →</a></div></article>`;
   }).join('');
 }
 function renderSourceHealth() {
@@ -99,13 +113,17 @@ function renderSourceHealth() {
   }).join('');
 }
 function renderHistory() {
+  const recentRemoved = [...(state.data.removed || [])]
+    .sort((a, b) => String(b['下架日期'] || '').localeCompare(String(a['下架日期'] || '')))
+    .slice(0, 20);
   const rows = [
     ...(state.data.price_changes || []).map(item => ({date: item['日期'], name: text(item['社區名稱'], '物件'), detail: `${money(item['舊總價(萬)'])} → ${money(item['新總價(萬)'])}`, type: '價格變動'})),
-    ...(state.data.removed || []).slice(0, 20).map(item => ({date: item['下架日期'], name: text(item['標題'], item['社區名稱'] || '物件'), detail: money(item['總價(萬)']), type: '下架'})),
+    ...recentRemoved.map(item => ({date: item['下架日期'], name: text(item['標題'], item['社區名稱'] || '物件'), detail: money(item['總價(萬)']), type: '下架'})),
   ].sort((a, b) => String(b.date).localeCompare(String(a.date)));
   $('#history').innerHTML = rows.length ? rows.map(item => `<div class="history-row"><span>${dateText(item.date)}</span><strong>${item.name}</strong><span>${item.detail}</span><span>${item.type}</span></div>`).join('') : '<div class="empty">目前沒有變動紀錄</div>';
 }
 function render() {
+  renderSourceOptions();
   renderMetrics();
   renderSourceHealth();
   renderListings();
