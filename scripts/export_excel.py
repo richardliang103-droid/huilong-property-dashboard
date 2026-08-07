@@ -302,12 +302,31 @@ def main():
     removed_rows = attach_source_details(read_sheet(workbook['已下架']), source_rows)
     active, deduplication = deduplicate_active(active_rows)
     active = mark_pending_removal(active)
+    price_changes = read_sheet(workbook['價格變動'])
+    # 價格變動工作表只存指紋；回查架上／歷史列補齊名稱與連結，
+    # 避免前端只能顯示泛稱「物件」。
+    listing_by_fingerprint = {}
+    for row in active_rows + removed_rows:
+        fingerprint = str(row.get('指紋') or '')
+        if fingerprint and fingerprint not in listing_by_fingerprint:
+            listing_by_fingerprint[fingerprint] = row
+    for change in price_changes:
+        fingerprint = str(change.get('指紋') or '')
+        listing = listing_by_fingerprint.get(fingerprint) or {}
+        if not change.get('社區名稱'):
+            change['社區名稱'] = listing.get('社區名稱') or ''
+        if not change.get('標題'):
+            change['標題'] = listing.get('標題') or ''
+        if not change.get('地址'):
+            change['地址'] = listing.get('地址') or ''
+        if not change.get('來源連結'):
+            change['來源連結'] = listing.get('來源連結') or ''
     payload = {
         'generated_at': datetime.now().isoformat(),
         'source': '本機迴龍物件追蹤.xlsx',
         'active': active,
         'removed': removed_rows,
-        'price_changes': read_sheet(workbook['價格變動']),
+        'price_changes': price_changes,
         'source_health': read_source_health(),
         'deduplication': deduplication,
     }
