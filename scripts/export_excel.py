@@ -37,6 +37,7 @@ def attach_source_details(rows, source_rows):
             '首次確認': source.get('首次確認') or None,
             '最後確認': source.get('最後確認') or None,
             '狀態': source.get('狀態') or None,
+            '下架日期': source.get('下架日期') or None,
         })
     for row in rows:
         sources = by_fingerprint.get(str(row.get('指紋') or ''))
