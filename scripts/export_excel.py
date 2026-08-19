@@ -3,7 +3,7 @@ import os
 import sys
 from datetime import datetime
 from pathlib import Path
-from openpyxl import load_workbook, InvalidFileException
+from openpyxl import load_workbook
 
 # Load configuration from environment with sensible defaults
 ROOT = Path(__file__).resolve().parents[1]
