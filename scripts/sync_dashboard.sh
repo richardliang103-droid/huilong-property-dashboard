@@ -28,19 +28,26 @@ mkdir -p "$LOG_DIR"
     exit 1
   fi
 
-  # 2️⃣ Git 拉取（避免落後）
-  echo "🔄 拉取遠端最新變更…"
+  # 2️⃣ Stash any local changes (the export may have modified data/properties.json)
+  echo "📦 暫存本地變更（如有）"
+  git stash push -m "pre-sync stash $(date +%Y%m%d%H%M%S)" -- "$DATA_FILE" || true
+
+  # 3️⃣ 拉取遠端最新變更並 rebase
+  echo "🔄 拉取遠端最新變更並 rebase…"
   if ! git fetch --quiet origin; then
-    echo "⚠️  git fetch 失敗，仍嘗試推送" >&2
+    echo "⚠️  git fetch 失敗" >&2
   fi
-  # 若有分歧，先 rebase 再 push（可依需求改為 merge）
+  # Rebase our local branch onto origin/main
   if ! git rebase --quiet origin/main; then
-    echo "⚠️  rebase 失敗，請手動處理衝突" >&2
-    git rebase --abort
-    exit 1
+    echo "⚠️  rebase 失敗，嘗試 merge 作為後備" >&2
+    git merge --quiet origin/main || true
   fi
 
-  # 3️⃣ 若無實質變動則跳過提交
+  # 4️⃣ 套用暫存的變更（如果有的話）
+  echo "📤 套用暫存的變更"
+  git stash pop || true
+
+  # 5️⃣ 若有實質變動則提交並推送
   if git diff --quiet -- "$DATA_FILE"; then
     echo "📄 資料未變動，跳過提交"
   else
@@ -48,7 +55,7 @@ mkdir -p "$LOG_DIR"
     git commit -m "Update property data $(date +%Y-%m-%d %H:%M:%S)"
     echo "📤 推送到遠端…"
     if ! git push origin main; then
-      echo "❌ 推送失敗（可能仍有衝突）" >&2
+      echo "❌ 推送失敗" >&2
       exit 1
     fi
     echo "🚀 推送成功，Vercel 將重新部署"
