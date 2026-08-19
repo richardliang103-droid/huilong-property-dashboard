@@ -1,11 +1,19 @@
 import json
+import os
 from datetime import datetime
 from pathlib import Path
 from openpyxl import load_workbook
 
+# Load configuration from environment with sensible defaults
 ROOT = Path(__file__).resolve().parents[1]
-SOURCE = Path.home() / 'Library/CloudStorage/SynologyDrive-Hermes/Houses/迴龍物件追蹤.xlsx'
-STATUS_SOURCE = Path.home() / '.hermes/profiles/argus/data/huilong_watch_status.json'
+SOURCE = Path(os.getenv(
+    "HUILONG_EXCEL",
+    Path.home() / 'Library/CloudStorage/SynologyDrive-Hermes/Houses/迴龍物件追蹤.xlsx'
+))
+STATUS_SOURCE = Path(os.getenv(
+    "HUILONG_STATUS_JSON",
+    Path.home() / '.hermes/profiles/argus/data/huilong_watch_status.json'
+))
 DEST = ROOT / 'data/properties.json'
 
 def clean(value):
@@ -19,7 +27,6 @@ def read_sheet(ws):
             continue
         rows.append({header: clean(values[i]) for i, header in enumerate(headers) if header})
     return rows
-
 
 def read_source_health():
     try:
@@ -49,7 +56,9 @@ def main():
     if DEST.exists():
         try:
             previous = json.loads(DEST.read_text(encoding='utf-8'))
-            if all(previous.get(key) == payload.get(key) for key in ('source', 'active', 'removed', 'price_changes', 'source_health')):
+            # Compare only the meaningful data keys
+            keys_to_compare = ('source', 'active', 'removed', 'price_changes', 'source_health')
+            if all(previous.get(k) == payload.get(k) for k in keys_to_compare):
                 payload['generated_at'] = previous.get('generated_at', payload['generated_at'])
         except (json.JSONDecodeError, OSError):
             pass
