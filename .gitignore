@@ -4,3 +4,4 @@ node_modules
 *.xlsx
 *.tmp
 __pycache__/
+logs/
