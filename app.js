@@ -112,12 +112,16 @@ function renderSourceHealth() {
     return `<span class="source-pill ${source.complete ? 'is-healthy' : 'is-warning'}" title="${stateText}${error}">${text(source.name)} <b>${text(source.collected, 0)}</b></span>`;
   }).join('');
 }
+function nameFromFingerprint(fp) {
+  const m = String(fp || '').match(/^community:(.+?)\||^(.+?)\|/);
+  return m && m[1] && m[1] !== 'community' ? m[1] : '';
+}
 function renderHistory() {
   const recentRemoved = [...(state.data.removed || [])]
     .sort((a, b) => String(b['下架日期'] || '').localeCompare(String(a['下架日期'] || '')))
     .slice(0, 20);
   const rows = [
-    ...(state.data.price_changes || []).map(item => ({date: item['日期'], name: text(item['社區名稱'] || item['標題'] || item['地址'], '未命名物件'), detail: `${money(item['舊總價(萬)'])} → ${money(item['新總價(萬)'])}`, type: '價格變動'})),
+    ...(state.data.price_changes || []).map(item => ({date: item['日期'], name: text(item['社區名稱'] || item['標題'] || item['地址'] || nameFromFingerprint(item['指紋']), '未命名物件'), detail: `${money(item['舊總價(萬)'])} → ${money(item['新總價(萬)'])}`, type: '價格變動'})),
     ...recentRemoved.map(item => ({date: item['下架日期'], name: text(item['標題'], item['社區名稱'] || '物件'), detail: money(item['總價(萬)']), type: '下架'})),
   ].sort((a, b) => String(b.date).localeCompare(String(a.date)));
   $('#history').innerHTML = rows.length ? rows.map(item => `<div class="history-row"><span>${dateText(item.date)}</span><strong>${item.name}</strong><span>${item.detail}</span><span>${item.type}</span></div>`).join('') : '<div class="empty">目前沒有變動紀錄</div>';
