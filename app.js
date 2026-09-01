@@ -113,8 +113,9 @@ function renderSourceHealth() {
   }).join('');
 }
 function nameFromFingerprint(fp) {
-  const m = String(fp || '').match(/^community:(.+?)\||^(.+?)\|/);
-  return m && m[1] && m[1] !== 'community' ? m[1] : '';
+  const m = String(fp || '').match(/^community:(.+?)\||^([^|]+)\|/);
+  const name = (m && (m[1] || m[2]) || '').trim();
+  return name && name !== 'community' ? name : '';
 }
 function renderHistory() {
   const recentRemoved = [...(state.data.removed || [])]
