@@ -1,5 +1,9 @@
 {
+<<<<<<< Updated upstream
   "generated_at": "2026-09-05T02:05:06.005471",
+=======
+  "generated_at": "2026-09-02T02:01:57.331990",
+>>>>>>> Stashed changes
   "source": "本機迴龍物件追蹤.xlsx",
   "active": [
     {
@@ -29,6 +33,7 @@
       "地圖連結": "https://www.google.com/maps/search/%E9%B4%BB%E9%82%A6%E4%B8%96%E7%95%8C%E8%8A%B1%E5%9C%92I",
       "標題": "⭐️世界花園高樓景觀三房",
       "首次出現": "2026-07-17",
+<<<<<<< Updated upstream
       "最後更新": "2026-09-05",
       "上架次數": 2,
       "重新上架日期": "2026-07-20",
@@ -40,6 +45,12 @@
           "連結": "https://www.sinyi.com.tw/buy/house/0795LN"
         }
       ]
+=======
+      "最後更新": "2026-09-02",
+      "上架次數": 2,
+      "重新上架日期": "2026-07-20",
+      "備註": null
+>>>>>>> Stashed changes
     },
     {
       "指紋": "community:瓏山林鴻邦世界花園|13/15|2f2h1w",
@@ -100,7 +111,11 @@
       "地圖連結": "https://www.google.com/maps/search/%E8%88%88%E5%AF%8C%E7%99%BC%E6%8D%B7%E4%BB%95%E5%A0%A1",
       "標題": "捷運迴龍捷仕堡兩房車位",
       "首次出現": "2026-06-24",
+<<<<<<< Updated upstream
       "最後更新": "2026-09-05",
+=======
+      "最後更新": "2026-09-02",
+>>>>>>> Stashed changes
       "上架次數": 2,
       "重新上架日期": "2026-07-20",
       "備註": null,
@@ -325,7 +340,11 @@
       "地圖連結": "https://www.google.com/maps/search/%E5%AF%8C%E5%88%A9%E5%A4%A9%E5%BB%88",
       "標題": "近捷運制震高樓兩房帶車位",
       "首次出現": "2026-06-24",
+<<<<<<< Updated upstream
       "最後更新": "2026-09-05",
+=======
+      "最後更新": "2026-09-02",
+>>>>>>> Stashed changes
       "上架次數": 2,
       "重新上架日期": "2026-07-20",
       "備註": null,
@@ -338,6 +357,7 @@
       ]
     },
     {
+<<<<<<< Updated upstream
       "指紋": "community:大華湖閱(天韻區)||3f2h2w",
       "社區名稱": "大華湖閱(天韻區)",
       "格局": "3房(室)2廳2衛",
@@ -377,6 +397,8 @@
       ]
     },
     {
+=======
+>>>>>>> Stashed changes
       "指紋": "community:近公園|12/13|3f1h2w",
       "社區名稱": "近公園",
       "格局": "3房(室)1廳2衛",
@@ -442,7 +464,11 @@
       "地圖連結": "https://www.google.com/maps/search/%E9%B4%BB%E9%82%A6%E4%B8%96%E7%95%8C%E8%8A%B1%E5%9C%92I",
       "標題": "丹鳳捷運邊間三房車位",
       "首次出現": "2026-08-11",
+<<<<<<< Updated upstream
       "最後更新": "2026-09-05",
+=======
+      "最後更新": "2026-09-02",
+>>>>>>> Stashed changes
       "上架次數": 1,
       "重新上架日期": null,
       "備註": null,
@@ -486,7 +512,11 @@
       "地圖連結": "https://www.google.com/maps/search/%E9%B4%BB%E9%82%A6%E4%B8%96%E7%95%8C%E8%8A%B1%E5%9C%92I",
       "標題": "推★捷運世界花園兩房車位",
       "首次出現": "2026-07-17",
+<<<<<<< Updated upstream
       "最後更新": "2026-09-05",
+=======
+      "最後更新": "2026-09-02",
+>>>>>>> Stashed changes
       "上架次數": 2,
       "重新上架日期": "2026-07-20",
       "備註": null,
@@ -528,6 +558,7 @@
       "最後更新": "2026-08-24",
       "上架次數": 1,
       "重新上架日期": null,
+<<<<<<< Updated upstream
       "備註": null,
       "來源物件": [
         {
@@ -536,6 +567,9 @@
           "連結": "https://www.hbhousing.com.tw/detail?sn=WS79574"
         }
       ]
+=======
+      "備註": null
+>>>>>>> Stashed changes
     },
     {
       "指紋": "community:住宅|9/14|3f2h2w",
@@ -564,7 +598,11 @@
       "地圖連結": "https://www.google.com/maps/search/%E4%BD%8F%E5%AE%85%E5%A4%A7%E6%A8%93",
       "標題": "富都新向I景觀無敵面學校I三房兩衛I全新未住",
       "首次出現": "2026-07-17",
+<<<<<<< Updated upstream
       "最後更新": "2026-09-04",
+=======
+      "最後更新": "2026-09-02",
+>>>>>>> Stashed changes
       "上架次數": 1,
       "重新上架日期": null,
       "備註": null,
@@ -652,7 +690,11 @@
       "地圖連結": "https://www.google.com/maps/search/%E6%8D%B7%E9%81%8B%E5%AE%B6%E5%A2%83",
       "標題": "✨家境亮麗三房車位",
       "首次出現": "2026-07-17",
+<<<<<<< Updated upstream
       "最後更新": "2026-09-05",
+=======
+      "最後更新": "2026-09-02",
+>>>>>>> Stashed changes
       "上架次數": 1,
       "重新上架日期": null,
       "備註": null,
@@ -750,7 +792,11 @@
       "地圖連結": "https://www.google.com/maps/search/%E6%8D%B7%E9%81%8B%E8%87%BB%E5%A2%83",
       "標題": "50.捷運臻境3房+車",
       "首次出現": "2026-07-20",
+<<<<<<< Updated upstream
       "最後更新": "2026-09-05",
+=======
+      "最後更新": "2026-09-02",
+>>>>>>> Stashed changes
       "上架次數": 1,
       "重新上架日期": null,
       "備註": null,
@@ -828,7 +874,11 @@
       "地圖連結": "https://www.google.com/maps/search/%E6%8D%B7%E9%81%8B%E5%AE%B6%E5%A2%83",
       "標題": "專任獨賣捷運家境三房車位",
       "首次出現": "2026-07-17",
+<<<<<<< Updated upstream
       "最後更新": "2026-09-05",
+=======
+      "最後更新": "2026-09-02",
+>>>>>>> Stashed changes
       "上架次數": 2,
       "重新上架日期": "2026-07-20",
       "備註": null,
@@ -945,7 +995,11 @@
       "地圖連結": "https://www.google.com/maps/search/%E8%AA%A0%E7%BE%8E%E5%AD%B8%E5%AD%B8%E9%99%A2",
       "標題": "捷運誠美學景觀三房車位",
       "首次出現": "2026-07-17",
+<<<<<<< Updated upstream
       "最後更新": "2026-09-05",
+=======
+      "最後更新": "2026-09-02",
+>>>>>>> Stashed changes
       "上架次數": 1,
       "重新上架日期": null,
       "備註": null,
@@ -985,11 +1039,19 @@
       "行政區": "新北市新莊區",
       "地址": "新北市新莊區新北大道七段",
       "來源網站": "信義房屋/永慶房屋",
+<<<<<<< Updated upstream
       "來源連結": "https://www.sinyi.com.tw/buy/house/4556KF",
       "地圖連結": "https://www.google.com/maps/search/%E8%AA%A0%E7%BE%8E%E5%AD%B8%E5%AD%B8%E9%99%A2",
       "標題": "捷運誠美學景觀三房車位",
       "首次出現": "2026-07-17",
       "最後更新": "2026-09-04",
+=======
+      "來源連結": "https://www.sinyi.com.tw/buy/house/9673HT",
+      "地圖連結": "https://www.google.com/maps/search/%E5%90%9B%E6%B3%B0",
+      "標題": "君泰．公園綠意三房車位",
+      "首次出現": "2026-07-21",
+      "最後更新": "2026-09-02",
+>>>>>>> Stashed changes
       "上架次數": 1,
       "重新上架日期": null,
       "備註": null,
@@ -1033,7 +1095,11 @@
       "地圖連結": "https://www.google.com/maps/search/%E8%88%88%E5%AF%8C%E7%99%BC%E6%8D%B7%E4%BB%95%E5%A0%A1",
       "標題": "捷運捷仕堡電梯３房",
       "首次出現": "2026-07-17",
+<<<<<<< Updated upstream
       "最後更新": "2026-09-05",
+=======
+      "最後更新": "2026-09-02",
+>>>>>>> Stashed changes
       "上架次數": 1,
       "重新上架日期": null,
       "備註": null,
@@ -1077,7 +1143,11 @@
       "地圖連結": "https://www.google.com/maps/search/%E5%90%9B%E6%B3%B0%E4%B8%80%E6%9C%9F",
       "標題": "捷運公園三房車位",
       "首次出現": "2026-07-21",
+<<<<<<< Updated upstream
       "最後更新": "2026-09-04",
+=======
+      "最後更新": "2026-09-02",
+>>>>>>> Stashed changes
       "上架次數": 1,
       "重新上架日期": null,
       "備註": null,
@@ -2093,29 +2163,51 @@
       "舊總價(萬)": 2598,
       "新總價(萬)": 2680,
       "來源網站": "台灣房屋/信義房屋",
+<<<<<<< Updated upstream
       "備註": "已修正之分類：2598錨點來自已下架信義4959MV(13樓)，2680來自台灣房屋TF02465137(11樓)，為同戶跨來源接續/欄位更新，非同來源連續漲價；樓層13→11指紋漂移已於2026-09修復避免再記"
     }
   ],
   "source_health": {
     "checked_at": "2026-09-05T02:03:19",
     "removal_allowed": true,
+=======
+      "備註": null
+    }
+  ],
+  "source_health": {
+    "checked_at": "2026-09-02T02:01:55",
+    "removal_allowed": false,
+>>>>>>> Stashed changes
     "sources": {
       "sinyi": {
         "name": "信義房屋",
         "complete": true,
+<<<<<<< Updated upstream
         "collected": 169,
+=======
+        "collected": 166,
+>>>>>>> Stashed changes
         "error": ""
       },
       "yungching": {
         "name": "永慶房屋",
         "complete": true,
+<<<<<<< Updated upstream
         "collected": 51,
+=======
+        "collected": 48,
+>>>>>>> Stashed changes
         "error": ""
       },
       "twhg": {
         "name": "台灣房屋",
+<<<<<<< Updated upstream
         "complete": true,
         "collected": 7,
+=======
+        "complete": false,
+        "collected": 0,
+>>>>>>> Stashed changes
         "error": ""
       },
       "hbh": {
