@@ -35,22 +35,43 @@ mkdir -p "$LOG_DIR"
   # 3️⃣ 拉取遠端最新變更並 rebase
   echo "🔄 拉取遠端最新變更並 rebase…"
   if ! git fetch --quiet origin; then
-    echo "⚠️  git fetch 失敗" >&2
+    echo "❌ git fetch 失敗，中止同步（遠端未動）" >&2
+    exit 1
   fi
-  # Rebase our local branch onto origin/main
   if ! git rebase --quiet origin/main; then
-    echo "⚠️  rebase 失敗，嘗試 merge 作為後備" >&2
-    git merge --quiet origin/main || true
+    echo "⚠️  rebase 衝突，放棄 rebase（不留下中間狀態）並改用 merge…" >&2
+    git rebase --abort 2>/dev/null || true
+    if ! git merge --quiet origin/main -m "Merge origin/main (sync)"; then
+      # data/properties.json 為可重新生成的產出檔：衝突時一律採用本機 HEAD 版，隨後由 stash pop／步驟 5 以最新匯出覆蓋。
+      echo "⚠️  merge 衝突，以本機版本解決 data/properties.json" >&2
+      git checkout --ours -- "$DATA_FILE" 2>/dev/null || true
+      git add "$DATA_FILE"
+      git commit --no-edit
+    fi
   fi
 
   # 4️⃣ 套用暫存的變更（如果有的話）
   echo "📤 套用暫存的變更"
-  git stash pop || true
+  if ! git stash pop; then
+    echo "⚠️  stash pop 衝突：直接採用暫存版（本機最新匯出）" >&2
+    git checkout "stash@{0}" -- "$DATA_FILE"
+    git stash drop
+  fi
 
-  # 5️⃣ 若有實質變動則提交並推送
+  # 5️⃣ git 操作後重新匯出一次，保證最終檔案必為全新乾淨 JSON（不可能含有衝突標記）
+  if ! "$PYTHON" "$EXPORT_SCRIPT"; then
+    echo "❌ 最終 Excel 匯出失敗" >&2
+    exit 1
+  fi
+
+  # 6️⃣ 若有實質變動則提交並推送（防禦性檢查：檔案不得含有衝突標記）
   if git diff --quiet -- "$DATA_FILE"; then
     echo "📄 資料未變動，跳過提交"
   else
+    if grep -q '^<<<<<<<\|^>>>>>>>' "$DATA_FILE"; then
+      echo "❌ data/properties.json 含有衝突標記，中止提交（不會推送）" >&2
+      exit 1
+    fi
     git add "$DATA_FILE"
     git commit -m "Update property data $(date +%Y-%m-%d %H:%M:%S)"
     echo "📤 推送到遠端…"
