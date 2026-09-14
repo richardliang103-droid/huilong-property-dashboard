@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-15T02:02:08.041386",
+  "generated_at": "2026-09-15T02:02:58.627280",
   "source": "本機迴龍物件追蹤.xlsx",
   "active": [
     {
@@ -1914,7 +1914,7 @@
     }
   ],
   "source_health": {
-    "checked_at": "2026-09-15T02:01:52",
+    "checked_at": "2026-09-15T02:02:45",
     "removal_allowed": true,
     "sources": {
       "sinyi": {
@@ -1926,7 +1926,7 @@
       "yungching": {
         "name": "永慶房屋",
         "complete": true,
-        "collected": 51,
+        "collected": 50,
         "error": ""
       },
       "twhg": {
@@ -1938,7 +1938,7 @@
       "hbh": {
         "name": "住商不動產",
         "complete": true,
-        "collected": 135,
+        "collected": 145,
         "error": ""
       },
       "utrust": {
