@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-09T02:12:40.343495",
+  "generated_at": "2026-10-09T06:46:36.263552",
   "source": "本機迴龍物件追蹤.xlsx",
   "active": [
     {
@@ -71,7 +71,7 @@
       "最後更新": "2026-10-05",
       "上架次數": 1,
       "重新上架日期": null,
-      "備註": "[待確認下架:1@2026-10-09] "
+      "備註": "[驗證未知:1@2026-10-09] [待確認下架:1@2026-10-09] "
     },
     {
       "指紋": "community:富利天廈|18/20|2f2h1w",
@@ -427,7 +427,7 @@
       "地圖連結": "https://www.google.com/maps/search/%E6%8D%B7%E9%81%8B%E4%B8%8A%E9%83%A1",
       "標題": "捷運上郡3房車",
       "首次出現": "2026-10-01",
-      "最後更新": "2026-10-07",
+      "最後更新": "2026-10-09",
       "上架次數": 1,
       "重新上架日期": null,
       "備註": null,
@@ -797,7 +797,7 @@
   "removed": [],
   "price_changes": [],
   "source_health": {
-    "checked_at": "2026-10-09T02:11:50",
+    "checked_at": "2026-10-09T06:46:29",
     "removal_allowed": true,
     "sources": {
       "sinyi": {
@@ -809,7 +809,7 @@
       "yungching": {
         "name": "永慶房屋",
         "complete": true,
-        "collected": 44,
+        "collected": 42,
         "error": ""
       },
       "twhg": {
@@ -821,7 +821,7 @@
       "hbh": {
         "name": "住商不動產",
         "complete": true,
-        "collected": 115,
+        "collected": 147,
         "error": ""
       },
       "utrust": {
