@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-17T02:03:17.118642",
+  "generated_at": "2026-10-17T06:02:08.102264",
   "source": "本機迴龍物件追蹤.xlsx",
   "active": [
     {
@@ -471,7 +471,7 @@
       "地圖連結": "https://www.google.com/maps/search/%E6%8D%B7%E9%81%8B%E4%B8%8A%E9%83%A1",
       "標題": "捷運上郡3房車",
       "首次出現": "2026-10-01",
-      "最後更新": "2026-10-15",
+      "最後更新": "2026-10-17",
       "上架次數": 1,
       "重新上架日期": null,
       "備註": null,
@@ -749,7 +749,7 @@
       "地圖連結": "https://www.google.com/maps/search/%E6%96%B0%E8%8E%8A%E8%88%88%E5%AF%8C%E7%99%BC%E6%8D%B7%E4%BB%95%E5%A0%A1",
       "標題": "新莊興富發捷仕堡2房+坡平車位",
       "首次出現": "2026-10-09",
-      "最後更新": "2026-10-11",
+      "最後更新": "2026-10-17",
       "上架次數": 1,
       "重新上架日期": null,
       "備註": null,
@@ -1838,7 +1838,7 @@
     }
   ],
   "source_health": {
-    "checked_at": "2026-10-17T02:02:00",
+    "checked_at": "2026-10-17T06:01:57",
     "removal_allowed": true,
     "sources": {
       "sinyi": {
@@ -1850,7 +1850,7 @@
       "yungching": {
         "name": "永慶房屋",
         "complete": true,
-        "collected": 47,
+        "collected": 46,
         "error": ""
       },
       "twhg": {
@@ -1862,7 +1862,7 @@
       "hbh": {
         "name": "住商不動產",
         "complete": true,
-        "collected": 40,
+        "collected": 50,
         "error": ""
       },
       "utrust": {
