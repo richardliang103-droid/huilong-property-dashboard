@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-25T09:39:03.271797",
+  "generated_at": "2026-10-25T09:53:41.764307",
   "source": "本機迴龍物件追蹤.xlsx",
   "active": [
     {
@@ -841,7 +841,7 @@
   "removed": [],
   "price_changes": [],
   "source_health": {
-    "checked_at": "2026-10-25T09:38:52",
+    "checked_at": "2026-10-25T09:53:29",
     "removal_allowed": true,
     "sources": {
       "sinyi": {
@@ -853,7 +853,7 @@
       "yungching": {
         "name": "永慶房屋",
         "complete": true,
-        "collected": 49,
+        "collected": 48,
         "error": ""
       },
       "twhg": {
