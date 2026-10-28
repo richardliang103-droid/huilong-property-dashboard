@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-29T02:03:25.898766",
+  "generated_at": "2026-10-29T06:03:48.157442",
   "source": "本機迴龍物件追蹤.xlsx",
   "active": [
     {
@@ -1807,19 +1807,19 @@
     }
   ],
   "source_health": {
-    "checked_at": "2026-10-29T02:03:11",
+    "checked_at": "2026-10-29T06:03:06",
     "removal_allowed": true,
     "sources": {
       "sinyi": {
         "name": "信義房屋",
         "complete": true,
-        "collected": 191,
+        "collected": 192,
         "error": ""
       },
       "yungching": {
         "name": "永慶房屋",
         "complete": true,
-        "collected": 49,
+        "collected": 50,
         "error": ""
       },
       "twhg": {
