@@ -5,3 +5,6 @@ node_modules
 *.tmp
 __pycache__/
 logs/
+.env
+.env.local
+*.bak-*

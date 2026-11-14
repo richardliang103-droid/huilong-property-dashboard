@@ -13,7 +13,7 @@ function safeUrl(value) {
     return '#';
   }
 }
-function today() { return state.data.generated_at.slice(0, 10); }
+function today() { return new Date().toLocaleDateString('sv-SE'); }
 function isNew(item) { return item['首次出現'] === today() && !item['重新上架日期']; }
 function isRelisted(item) { return item['重新上架日期'] === today(); }
 function listingDate(item) { return item['重新上架日期'] || item['首次出現'] || ''; }
@@ -109,7 +109,8 @@ function renderSourceHealth() {
   $('#source-health').innerHTML = sources.map(source => {
     const stateText = source.complete ? '資料完整' : source.error ? '抓取失敗' : '資料不完整';
     const error = source.error ? `：${text(source.error)}` : '';
-    return `<span class="source-pill ${source.complete ? 'is-healthy' : 'is-warning'}" title="${stateText}${error}">${text(source.name)} <b>${text(source.collected, 0)}</b></span>`;
+    const statusLabel = source.complete ? '' : `（${stateText}）`;
+    return `<span class="source-pill ${source.complete ? 'is-healthy' : 'is-warning'}" title="${stateText}${error}">${text(source.name)}${statusLabel} <b>${text(source.collected, 0)}</b></span>`;
   }).join('');
 }
 function nameFromFingerprint(fp) {
@@ -145,6 +146,9 @@ async function init() {
     render();
   } catch (_) {
     $('#listings').innerHTML = '<div class="empty">資料載入失敗，請稍後重新整理。</div>';
+    $('#updated').textContent = '資料載入失敗';
+    $('#footer-date').textContent = '資料載入失敗';
+    $('#hero-count').textContent = '—';
   }
 }
 $('#search').addEventListener('input', event => { state.filters.search = event.target.value; renderListings(); });

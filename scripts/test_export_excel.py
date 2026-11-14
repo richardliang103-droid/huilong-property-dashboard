@@ -83,6 +83,20 @@ class DeduplicateActiveTests(unittest.TestCase):
             'https://buy.yungching.com.tw/house/7240646',
         ])
 
+    def test_source_detail_sheet_dedupes_same_url_prefers_active(self):
+        row = listing('grouped', 指紋='group-2')
+        attach_source_details([row], [
+            {'物件指紋': 'group-2', '來源網站': '信義房屋', '來源物件編號': '7498JS',
+             '來源連結': 'https://www.sinyi.com.tw/buy/house/7498JS',
+             '狀態': '已下架', '最後確認': '2026-08-25'},
+            {'物件指紋': 'group-2', '來源網站': '信義房屋', '來源物件編號': '7498JS',
+             '來源連結': 'https://www.sinyi.com.tw/buy/house/7498JS',
+             '狀態': '架上', '最後確認': '2026-11-14'},
+        ])
+        self.assertEqual(len(row['來源物件']), 1)
+        self.assertEqual(row['來源物件'][0]['狀態'], '架上')
+        self.assertEqual(row['來源物件'][0]['最後確認'], '2026-11-14')
+
 
 class MarkPendingRemovalTests(unittest.TestCase):
     def test_flag_is_derived_from_remark_text(self):
