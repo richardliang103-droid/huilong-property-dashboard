@@ -29,8 +29,18 @@ mkdir -p "$LOG_DIR"
   fi
 
   # 2️⃣ Stash any local changes (the export may have modified data/properties.json)
+  STASH_CREATED=0
   echo "📦 暫存本地變更（如有）"
-  git stash push -m "pre-sync stash $(date +%Y%m%d%H%M%S)" -- "$DATA_FILE" || true
+  if git diff --quiet -- "$DATA_FILE"; then
+    echo "無本地變更，跳過 stash"
+  else
+    if git stash push -m "pre-sync stash $(date +%Y%m%d%H%M%S)" -- "$DATA_FILE"; then
+      STASH_CREATED=1
+    else
+      echo "❌ git stash 失敗，中止同步" >&2
+      exit 1
+    fi
+  fi
 
   # 3️⃣ 拉取遠端最新變更並 rebase
   echo "🔄 拉取遠端最新變更並 rebase…"
@@ -52,10 +62,22 @@ mkdir -p "$LOG_DIR"
 
   # 4️⃣ 套用暫存的變更（如果有的話）
   echo "📤 套用暫存的變更"
-  if ! git stash pop; then
-    echo "⚠️  stash pop 衝突：直接採用暫存版（本機最新匯出）" >&2
-    git checkout "stash@{0}" -- "$DATA_FILE"
-    git stash drop
+  if [ "$STASH_CREATED" -eq 1 ]; then
+    if ! git stash pop; then
+      echo "⚠️  stash pop 衝突：直接採用暫存版（本機最新匯出）" >&2
+      STASH_REF="$(git stash list -1 --format='%gd')"
+      if [ -z "$STASH_REF" ]; then
+        echo "❌ 找不到可套用的 stash，中止同步" >&2
+        exit 1
+      fi
+      if ! git checkout "$STASH_REF" -- "$DATA_FILE"; then
+        echo "❌ 無法從 $STASH_REF 取回 $DATA_FILE，中止同步" >&2
+        exit 1
+      fi
+      git stash drop "$STASH_REF" || true
+    fi
+  else
+    echo "無暫存變更，跳過"
   fi
 
   # 5️⃣ git 操作後重新匯出一次，保證最終檔案必為全新乾淨 JSON（不可能含有衝突標記）
