@@ -18,7 +18,7 @@ STATUS_SOURCE = Path(os.getenv(
     "HUILONG_STATUS_JSON",
     Path.home() / '.hermes/profiles/argus/data/huilong_watch_status.json'
 ))
-DEST = ROOT / 'data/properties.json'
+DEST = Path(os.getenv("HUILONG_DEST", ROOT / 'data/properties.json'))
 
 def clean(value):
     return value.isoformat() if hasattr(value, 'isoformat') else value
@@ -401,7 +401,9 @@ def main():
         if DEST.exists() and DEST.read_text(encoding='utf-8') == serialized:
             print('dashboard data unchanged')
             return
-        DEST.write_text(serialized, encoding='utf-8')
+        tmp_dest = DEST.with_suffix('.json.tmp')
+        tmp_dest.write_text(serialized, encoding='utf-8')
+        os.replace(tmp_dest, DEST)
         print(f"exported active={len(payload['active'])} removed={len(payload['removed'])} price_changes={len(payload['price_changes'])}")
     except Exception as e:
         print(f"Error during export: {e}", file=sys.stderr)

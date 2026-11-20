@@ -52,11 +52,20 @@ mkdir -p "$LOG_DIR"
     echo "⚠️  rebase 衝突，放棄 rebase（不留下中間狀態）並改用 merge…" >&2
     git rebase --abort 2>/dev/null || true
     if ! git merge --quiet origin/main -m "Merge origin/main (sync)"; then
+      if git diff --name-only --diff-filter=U | grep -qv '^data/properties\.json$'; then
+        echo "❌ merge 衝突包含非 data/properties.json 檔案，放棄合併並中止同步" >&2
+        git merge --abort 2>/dev/null || true
+        exit 1
+      fi
       # data/properties.json 為可重新生成的產出檔：衝突時一律採用本機 HEAD 版，隨後由 stash pop／步驟 5 以最新匯出覆蓋。
       echo "⚠️  merge 衝突，以本機版本解決 data/properties.json" >&2
       git checkout --ours -- "$DATA_FILE" 2>/dev/null || true
       git add "$DATA_FILE"
-      git commit --no-edit
+      if ! git commit --no-edit; then
+        echo "❌ merge commit 失敗，放棄合併並中止同步" >&2
+        git merge --abort 2>/dev/null || true
+        exit 1
+      fi
     fi
   fi
 
