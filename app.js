@@ -13,7 +13,7 @@ function safeUrl(value) {
     return '#';
   }
 }
-function today() { return new Date().toLocaleDateString('sv-SE'); }
+function today() { return new Intl.DateTimeFormat('sv-SE', { timeZone: 'Asia/Taipei' }).format(new Date()); }
 function isNew(item) { return item['首次出現'] === today() && !item['重新上架日期']; }
 function isRelisted(item) { return item['重新上架日期'] === today(); }
 function listingDate(item) { return item['重新上架日期'] || item['首次出現'] || ''; }

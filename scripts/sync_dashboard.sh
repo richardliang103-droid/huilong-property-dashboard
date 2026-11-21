@@ -13,6 +13,14 @@ DATA_FILE="$ROOT/data/properties.json"
 LOG_DIR="$ROOT/logs"
 LOG_FILE="$LOG_DIR/sync_$(date +%Y%m%d).log"
 
+run_git_timeout() {
+  if command -v timeout >/dev/null 2>&1; then
+    timeout 120 "$@"
+  else
+    perl -e 'alarm shift; exec @ARGV' 120 "$@"
+  fi
+}
+
 # Ensure log directory exists
 mkdir -p "$LOG_DIR"
 
@@ -44,16 +52,21 @@ mkdir -p "$LOG_DIR"
 
   # 3️⃣ 拉取遠端最新變更並 rebase
   echo "🔄 拉取遠端最新變更並 rebase…"
-  if ! git fetch --quiet origin; then
+  if ! run_git_timeout git fetch --quiet origin; then
     echo "❌ git fetch 失敗，中止同步（遠端未動）" >&2
     exit 1
   fi
   if ! git rebase --quiet origin/main; then
     echo "⚠️  rebase 衝突，放棄 rebase（不留下中間狀態）並改用 merge…" >&2
     git rebase --abort 2>/dev/null || true
-    if ! git merge --quiet origin/main -m "Merge origin/main (sync)"; then
+    if ! run_git_timeout git merge --quiet origin/main -m "Merge origin/main (sync)"; then
       if git diff --name-only --diff-filter=U | grep -qv '^data/properties\.json$'; then
         echo "❌ merge 衝突包含非 data/properties.json 檔案，放棄合併並中止同步" >&2
+        git merge --abort 2>/dev/null || true
+        exit 1
+      fi
+      if [ -z "$(git diff --name-only --diff-filter=U)" ]; then
+        echo "❌ git merge 逾時或失敗，放棄合併並中止同步" >&2
         git merge --abort 2>/dev/null || true
         exit 1
       fi
@@ -106,7 +119,7 @@ mkdir -p "$LOG_DIR"
     git add "$DATA_FILE"
     git commit -m "Update property data $(date +%Y-%m-%d %H:%M:%S)"
     echo "📤 推送到遠端…"
-    if ! git push origin main; then
+    if ! run_git_timeout git push origin main; then
       echo "❌ 推送失敗" >&2
       exit 1
     fi

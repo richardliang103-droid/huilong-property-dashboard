@@ -1,12 +1,15 @@
 import json
 import os
 import re
+import signal
 import sys
+import threading
 from datetime import datetime
 from itertools import combinations
 from pathlib import Path
 from urllib.parse import urlparse
 from openpyxl import load_workbook
+from openpyxl.utils.exceptions import InvalidFileException
 
 # Load configuration from environment with sensible defaults
 ROOT = Path(__file__).resolve().parents[1]
@@ -22,6 +25,21 @@ DEST = Path(os.getenv("HUILONG_DEST", ROOT / 'data/properties.json'))
 
 def clean(value):
     return value.isoformat() if hasattr(value, 'isoformat') else value
+
+def _open_workbook_with_timeout(path, timeout=90):
+    if threading.current_thread() is threading.main_thread():
+        def _handle_timeout(signum, frame):
+            raise TimeoutError(f"Loading workbook timed out after {timeout} seconds: {path}")
+
+        old_handler = signal.signal(signal.SIGALRM, _handle_timeout)
+        signal.setitimer(signal.ITIMER_REAL, timeout)
+        try:
+            return load_workbook(path, data_only=True)
+        finally:
+            signal.setitimer(signal.ITIMER_REAL, 0)
+            signal.signal(signal.SIGALRM, old_handler)
+    else:
+        return load_workbook(path, data_only=True)
 
 def read_sheet(ws):
     headers = [cell.value for cell in ws[1]]
@@ -363,7 +381,11 @@ def main():
     try:
         if not SOURCE.exists():
             raise SystemExit(f'Excel not found: {SOURCE}')
-        workbook = load_workbook(SOURCE, data_only=True)
+        try:
+            workbook = _open_workbook_with_timeout(SOURCE, timeout=90)
+        except (TimeoutError, InvalidFileException) as e:
+            print(f"Error loading workbook: {e}", file=sys.stderr)
+            sys.exit(4)
         source_rows = read_sheet(workbook['來源明細']) if '來源明細' in workbook.sheetnames else []
         active_rows = attach_source_details(read_sheet(workbook['架上']), source_rows)
         removed_rows = attach_source_details(read_sheet(workbook['已下架']), source_rows)
