@@ -86,50 +86,6 @@ def attach_source_details(rows, source_rows):
     return rows
 
 
-def attach_source_records(rows, ws_sources):
-    """把「來源明細」的每來源獨立紀錄（網站＋連結）掛回架上/已下架列。
-
-    讓前端能把同一物件多來源的網頁連結分開顯示（問題五），而不是把
-    「台灣房屋/信義房屋」併成單一連結。
-    """
-    headers = [cell.value for cell in ws_sources[1]]
-    sources_by_fingerprint = {}
-    for values in ws_sources.iter_rows(min_row=2, values_only=True):
-        if not any(value is not None for value in values):
-            continue
-        d = {header: clean(values[i]) for i, header in enumerate(headers) if header}
-        fp = str(d.get('物件指紋', '') or '')
-        if not fp:
-            continue
-        # 已下架的來源記錄代表該仲介的這筆刊登已消失，不應作為「可點」連結。
-        if d.get('狀態') == '已下架':
-            continue
-        sources_by_fingerprint.setdefault(fp, []).append({
-            '網站': d.get('來源網站', ''),
-            '物件編號': d.get('來源物件編號', ''),
-            '連結': d.get('來源連結', ''),
-        })
-    for row in rows:
-        fp = str(row.get('指紋', '') or '')
-        if fp not in sources_by_fingerprint:
-            continue
-        sources = sources_by_fingerprint[fp]
-        row['來源物件'] = sources
-        # 同步推導顯示欄位，避免徽章仍顯示已下架的來源名卻只有單一連結。
-        names = []
-        for source in sources:
-            name = str(source.get('網站', '') or '')
-            if name and name not in names:
-                names.append(name)
-        if names:
-            row['來源網站'] = '/'.join(names)
-        preferred = next((s for s in sources if s.get('網站') in ('信義房屋', '永慶房屋') and s.get('連結')), None) \
-            or next((s for s in sources if s.get('連結')), None)
-        if preferred:
-            row['來源連結'] = preferred['連結']
-    return rows
-
-
 def read_source_health():
     try:
         data = json.loads(STATUS_SOURCE.read_text(encoding='utf-8'))
