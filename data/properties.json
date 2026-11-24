@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-25T02:04:10.704939",
+  "generated_at": "2026-11-25T06:03:40.333290",
   "source": "本機迴龍物件追蹤.xlsx",
   "active": [
     {
@@ -2529,7 +2529,7 @@
     }
   ],
   "source_health": {
-    "checked_at": "2026-11-25T02:04:10+08:00",
+    "checked_at": "2026-11-25T06:03:39+08:00",
     "removal_allowed": true,
     "sources": {
       "sinyi": {
@@ -2541,7 +2541,7 @@
       "yungching": {
         "name": "永慶房屋",
         "complete": true,
-        "collected": 54,
+        "collected": 56,
         "error": ""
       },
       "twhg": {
@@ -2552,9 +2552,9 @@
       },
       "hbh": {
         "name": "住商不動產",
-        "complete": true,
-        "collected": 19,
-        "error": ""
+        "complete": false,
+        "collected": 0,
+        "error": "Locator.click: Element is outside of the viewport\nCall log:\n  - waiting for locator(\"button:visible\").filter(has_text=re.compile(r\"^14$\")).first\n    - locator r"
       },
       "utrust": {
         "name": "有巢氏房屋",
